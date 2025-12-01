@@ -1,6 +1,6 @@
 {
   "name": "Flappy Baby",
-  "short_name": "Flappy Baby",
+  "short_name": "FlappyBaby",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#b3e6ff",
