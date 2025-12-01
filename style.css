@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  background: #b3e6ff; /* soft baby-sky blue */
+  background: #b3e6ff; /* Baby sky blue */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -9,6 +9,6 @@ body {
 }
 
 canvas {
-  border: 3px solid white;
+  border: 4px solid white;
   border-radius: 20px;
 }
