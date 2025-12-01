@@ -1,0 +1,14 @@
+body {
+  margin: 0;
+  background: #b3e6ff; /* soft baby-sky blue */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  user-select: none;
+}
+
+canvas {
+  border: 3px solid white;
+  border-radius: 20px;
+}
