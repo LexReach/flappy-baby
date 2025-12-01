@@ -8,7 +8,8 @@ self.addEventListener("install", e => {
         "game.js",
         "assets/baby.png",
         "assets/millie.png",
-        "assets/gameover.png"
+        "assets/gameover.png",
+        "assets/icon.png"
       ])
     )
   );
