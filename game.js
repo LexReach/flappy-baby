@@ -2,25 +2,28 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 //
-// IMAGES
+// LOAD IMAGES
 //
 let babyImg = new Image();
 babyImg.src = "assets/baby.png";
 
+let millieImg = new Image();
+millieImg.src = "assets/millie.png";
+
 let gameOverImg = new Image();
-gameOverImg.src = "assets/gameover.png"; // <-- MAKE SURE THIS FILE EXISTS
+gameOverImg.src = "assets/gameover.png";
 
 //
-// BABY OBJECT
+// BABY SETTINGS
 //
 let baby = {
   x: 80,
   y: canvas.height / 2,
   width: 150,
   height: 65,
-  gravity: 0.35,
-  lift: -7.5,
-  velocity: 0
+  velocity: 0,
+  gravity: 0.38,
+  lift: -8
 };
 
 //
@@ -30,20 +33,24 @@ let pipes = [];
 let score = 0;
 let gameOver = false;
 
+//
+// RESET GAME
+//
 function resetGame() {
   baby.y = canvas.height / 2;
   baby.velocity = 0;
-  score = 0;
   pipes = [];
+  score = 0;
   gameOver = false;
 }
 
 //
-// PIPE GENERATION
+// CREATE DIAPER OBSTACLES
 //
 function createPipe() {
-  let gap = 180;
-  let top = Math.random() * (canvas.height - gap - 100);
+  let gap = 200; // space between diaper towers
+  let top = Math.random() * (canvas.height - gap - 200);
+
   pipes.push({
     x: canvas.width,
     top,
@@ -56,33 +63,49 @@ function createPipe() {
 setInterval(createPipe, 2000);
 
 //
-// DRAW FUNCTIONS
+// DRAW BABY
 //
 function drawBaby() {
   ctx.drawImage(babyImg, baby.x, baby.y, baby.width, baby.height);
 }
 
+//
+// DRAW DIAPER TOWERS
+//
 function drawPipes() {
-  ctx.fillStyle = "#FFC0CB"; // baby pink
   pipes.forEach(p => {
-    ctx.fillRect(p.x, 0, p.width, p.top);
-    ctx.fillRect(p.x, p.bottom, p.width, canvas.height - p.bottom);
+    // top stack
+    ctx.drawImage(millieImg, p.x, 0, p.width, p.top);
+
+    // bottom stack
+    ctx.drawImage(
+      millieImg,
+      p.x,
+      p.bottom,
+      p.width,
+      canvas.height - p.bottom
+    );
   });
 }
 
+//
+// DRAW SCORE
+//
 function drawScore() {
   ctx.fillStyle = "white";
   ctx.font = "40px sans-serif";
   ctx.fillText(score, 20, 60);
 }
 
-function drawGameOverImage() {
-  const imgWidth = 350;
-  const imgHeight = 250;
-  const x = (canvas.width - imgWidth) / 2;
-  const y = (canvas.height - imgHeight) / 2;
-
-  ctx.drawImage(gameOverImg, x, y, imgWidth, imgHeight);
+//
+// DRAW GAME OVER SCREEN
+//
+function drawGameOver() {
+  const w = 350;
+  const h = 250;
+  const x = (canvas.width - w) / 2;
+  const y = (canvas.height - h) / 2;
+  ctx.drawImage(gameOverImg, x, y, w, h);
 }
 
 //
@@ -93,13 +116,10 @@ function update() {
     baby.velocity += baby.gravity;
     baby.y += baby.velocity;
 
-    if (baby.y + baby.height > canvas.height || baby.y < 0) {
-      gameOver = true;
-    }
-
     pipes.forEach(p => {
       p.x -= 3;
 
+      // collision detection
       if (
         baby.x < p.x + p.width &&
         baby.x + baby.width > p.x &&
@@ -108,13 +128,20 @@ function update() {
         gameOver = true;
       }
 
+      // passed obstacle
       if (p.x + p.width < baby.x && !p.scored) {
         score++;
         p.scored = true;
       }
     });
 
+    // remove pipes off screen
     pipes = pipes.filter(p => p.x + p.width > 0);
+
+    // hit floor/ceiling
+    if (baby.y < 0 || baby.y + baby.height > canvas.height) {
+      gameOver = true;
+    }
   }
 
   draw();
@@ -122,7 +149,7 @@ function update() {
 }
 
 //
-// RENDER
+// RENDER FRAME
 //
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -130,23 +157,15 @@ function draw() {
   drawPipes();
   drawScore();
 
-  if (gameOver) {
-    drawGameOverImage();
-  }
+  if (gameOver) drawGameOver();
 }
 
 //
-// INPUT HANDLING
+// PLAYER INPUT
 //
 canvas.addEventListener("touchstart", () => {
-  if (gameOver) {
-    resetGame();
-  } else {
-    baby.velocity = baby.lift;
-  }
+  if (gameOver) resetGame();
+  else baby.velocity = baby.lift;
 });
 
-//
-// START GAME
-//
 babyImg.onload = update;
