@@ -14,16 +14,16 @@ let gameOverImg = new Image();
 gameOverImg.src = "assets/gameover.png";
 
 //
-// BABY SETTINGS
+// BABY SETTINGS (slightly smaller + floatier)
 //
 let baby = {
   x: 80,
   y: canvas.height / 2,
-  width: 150,
-  height: 65,
+  width: 130,          // was 150 – smaller hitbox
+  height: 56,          // was 65
   velocity: 0,
-  gravity: 0.38,
-  lift: -8
+  gravity: 0.32,       // was 0.38 – falls a bit slower
+  lift: -9             // was -8 – stronger flap
 };
 
 //
@@ -45,11 +45,15 @@ function resetGame() {
 }
 
 //
-// CREATE DIAPER OBSTACLES
+// CREATE DIAPER OBSTACLES (wider gap, nicer range)
 //
 function createPipe() {
-  let gap = 200; // space between diaper towers
-  let top = Math.random() * (canvas.height - gap - 200);
+  const gap = 260; // was 200 – MUCH easier
+  const marginTop = 80;
+  const marginBottom = 120;
+  const maxTop = canvas.height - gap - marginBottom;
+
+  let top = marginTop + Math.random() * (maxTop - marginTop);
 
   pipes.push({
     x: canvas.width,
@@ -60,7 +64,8 @@ function createPipe() {
   });
 }
 
-setInterval(createPipe, 2000);
+// spawn pipes a bit less often (was 2000)
+setInterval(createPipe, 2300);
 
 //
 // DRAW BABY
@@ -113,11 +118,13 @@ function drawGameOver() {
 //
 function update() {
   if (!gameOver) {
+    // physics
     baby.velocity += baby.gravity;
     baby.y += baby.velocity;
 
+    // move pipes (slower; was 3)
     pipes.forEach(p => {
-      p.x -= 3;
+      p.x -= 2.2;
 
       // collision detection
       if (
@@ -135,7 +142,7 @@ function update() {
       }
     });
 
-    // remove pipes off screen
+    // keep only visible pipes
     pipes = pipes.filter(p => p.x + p.width > 0);
 
     // hit floor/ceiling
@@ -161,11 +168,17 @@ function draw() {
 }
 
 //
-// PLAYER INPUT
+// INPUT
 //
 canvas.addEventListener("touchstart", () => {
-  if (gameOver) resetGame();
-  else baby.velocity = baby.lift;
+  if (gameOver) {
+    resetGame();
+  } else {
+    baby.velocity = baby.lift;
+  }
 });
 
+//
+// START GAME LOOP
+//
 babyImg.onload = update;
