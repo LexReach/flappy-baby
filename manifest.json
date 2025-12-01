@@ -1,0 +1,9 @@
+{
+  "name": "Flappy Baby",
+  "short_name": "Flappy Baby",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#b3e6ff",
+  "theme_color": "#b3e6ff",
+  "icons": []
+}
